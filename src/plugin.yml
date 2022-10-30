@@ -1,0 +1,7 @@
+main: net.herobrine.clashroyale.ClashRoyaleMain
+name: ClashRoyale
+version: 1.5
+commands:
+  bcdev:
+    description: Battle Clash Dev Tools
+    

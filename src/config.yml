@@ -1,0 +1,169 @@
+required-players: 2
+max-players: 20
+countdown-seconds: 15
+lobby-spawn: 
+  world: 'hypixelhub'
+  x: 189
+  y: 64
+  z: 4
+  pitch: 1
+  yaw: 90
+lobby-npc-spawn:
+  world: 'hypixelhub'
+  x: 10.5
+  y: 80
+  z: 19.5
+  pitch: 0
+  yaw:  -90
+arenas:
+  '1':
+    world: 'arena10'
+    x: 172
+    y: 32
+    z: -1437
+    pitch: -1
+    yaw: 7
+    red-spawn:
+      world: 'arena10'
+      x: 203
+      y: 15
+      z: -1461
+      pitch: 0
+      yaw: 1
+    blue-spawn:
+      world: 'arena10'
+      x: 203
+      y: 15
+      z: -1400
+      pitch: -180
+      yaw: 6
+  '3':
+    world: 'clashMap'
+    x: 172
+    y: 32
+    z: -1437
+    pitch: -1
+    yaw: 7
+    red-spawn:
+      world: 'clashMap'
+      x: 115
+      y: 82
+      z: 173
+      pitch: 0
+      yaw: -180
+    blue-spawn:
+      world: 'clashMap'
+      x: 115
+      y: 82
+      z: 113
+      pitch: 0
+      yaw: 0
+towers:
+  arena: 3
+  world: 'clashMap'
+  left_red_princess:
+    region:
+      '0':
+        x: 88.5
+        y: 82
+        z: 178.5
+      '1':
+        x: 97.5
+        y: 90
+        z: 187.5
+    shootTeam: 'BLUE'
+    active: false
+    type: 'PRINCESS'
+    assignedCannon: 'red_left'
+    range: 5
+  right_red_princess:
+    region:
+      '0':
+        x: 132.5
+        y: 82
+        z: 178.5
+      '1':
+        x: 141.5
+        y: 90
+        z: 187.5
+    shootTeam: 'BLUE'
+    active: false
+    type: 'PRINCESS'
+    assignedCannon: 'red_right'
+    range: 5
+  left_blue_princess:
+    region:
+      '0':
+        x: 97.5
+        y: 82
+        z: 111.5
+      '1':
+        x: 88.5
+        y: 90
+        z: 102.5
+    shootTeam: 'RED'
+    active: false
+    type: 'PRINCESS'
+    assignedCannon: 'blue_left'
+    range: 5
+  right_blue_princess:
+    region:
+      '0':
+        x: 141.5
+        y: 82
+        z: 111.5
+      '1':
+        x: 132.5
+        y: 90
+        z: 102.5
+    shootTeam: 'RED'
+    active: false
+    type: 'PRINCESS'
+    assignedCannon: 'blue_right'
+    range: 5    
+  blue_king:
+    region:
+      '0':
+        x: 100.5
+        y: 82
+        z: 96.5
+      '1':
+        x: 129.5
+        y: 90
+        z: 84.5
+    shootTeam: 'RED'
+    active: false
+    type: 'KING'
+    range: 5    
+    assignedCannon: 'blue_king'
+    assignedCannon1: 'blue_king1'
+  red_king:
+    region:
+      '0':
+        x: 129.5
+        y: 82
+        z: 193.5
+      '1':
+        x: 100.5
+        y: 90
+        z: 205.5
+    shootTeam: 'BLUE'
+    active: false
+    type: 'KING'
+    range: 5  
+    assignedCannon: 'red_king'
+    assignedCannon1: 'red_king2'    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
