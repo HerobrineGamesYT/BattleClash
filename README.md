@@ -11,30 +11,36 @@ More information on this game:
 Custom Classes:
 - Bandit: Fast and sneaky, melee your enemies with a sharp stick, complete with a dash ability!
 
-- ![image](https://user-images.githubusercontent.com/74119793/198856952-2f6d7af5-a29a-471a-bacf-3e6dd5898884.png)
+ ![image](https://user-images.githubusercontent.com/74119793/198856952-2f6d7af5-a29a-471a-bacf-3e6dd5898884.png)
 
 
 - Wizard: Shoot fireballs at your enemies! Bonus: Can double jump every 7 seconds and has a 25% resistance to melee attacks
-- ![image](https://user-images.githubusercontent.com/74119793/198856960-2d90b3ff-27f7-4543-af6c-f0a3178e87f4.png)
+
+![image](https://user-images.githubusercontent.com/74119793/198856960-2d90b3ff-27f7-4543-af6c-f0a3178e87f4.png)
 
 
 - Knight: A classic. Melee your enemies in your shining gold armor!
-- ![image](https://user-images.githubusercontent.com/74119793/198856967-55a6edc2-bde7-4551-b3a8-438d53df1feb.png)
+
+![image](https://user-images.githubusercontent.com/74119793/198856967-55a6edc2-bde7-4551-b3a8-438d53df1feb.png)
 
 
 - Archer: Shoot arrows at your enemies!
-- ![image](https://user-images.githubusercontent.com/74119793/198856973-ac397ff7-1bed-4c18-8e28-d9c5ae93c3bd.png)
+
+![image](https://user-images.githubusercontent.com/74119793/198856973-ac397ff7-1bed-4c18-8e28-d9c5ae93c3bd.png)
 
 
 - Witch: Shoot magic and summon skeletons to do your bidding!
-- ![image](https://user-images.githubusercontent.com/74119793/198856991-db29df0e-07da-4f89-a6ec-ad7551b18136.png)
+
+![image](https://user-images.githubusercontent.com/74119793/198856991-db29df0e-07da-4f89-a6ec-ad7551b18136.png)
 
 - Battle Healer: Heal teammates in a 3 block radius with your attacks!
-- ![image](https://user-images.githubusercontent.com/74119793/198856999-b13a6aa0-2b53-4f13-8eb2-54192d486ecc.png)
+
+![image](https://user-images.githubusercontent.com/74119793/198856999-b13a6aa0-2b53-4f13-8eb2-54192d486ecc.png)
 
 
 - Lumberjack: Attack with your axe and give nearby teammates a "rage effect" [haste and speed] for a few seconds on death!
-- ![image](https://user-images.githubusercontent.com/74119793/198857007-f3cfe39b-614e-4fc3-89c7-6a4abd7a55f1.png)
+
+![image](https://user-images.githubusercontent.com/74119793/198857007-f3cfe39b-614e-4fc3-89c7-6a4abd7a55f1.png)
 
 
 **Original**: 
