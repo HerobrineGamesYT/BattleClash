@@ -1,5 +1,5 @@
 # BattleClash
-A Minecraft minigame featuring both a custom Team Deathmatch and Tower Attack gamemodes with custom classes and some custom mechanics inspired from the mobile game Clash Royale.
+A Minecraft minigame featuring both a custom Team Deathmatch and Tower Attack gamemodes with custom classes and some custom mechanics inspired from the mobile game Clash Royale. Development on this project was done on/off throughout 2021.
 
 Dependencies:
 - [Mine] HerobrinePVP-CORE (Main core. It's the backbone for all my custom plugins within this setup.)
