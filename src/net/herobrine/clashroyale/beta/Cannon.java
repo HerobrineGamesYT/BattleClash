@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.UUID;
 
+import net.herobrine.clashroyale.classes.Monk;
+import net.herobrine.gamecore.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
@@ -25,10 +27,6 @@ import org.bukkit.util.Vector;
 import net.herobrine.clashroyale.ClashRoyaleMain;
 import net.herobrine.clashroyale.CustomDeathCause;
 import net.herobrine.clashroyale.GameListener;
-import net.herobrine.gamecore.Arena;
-import net.herobrine.gamecore.GameState;
-import net.herobrine.gamecore.Manager;
-import net.herobrine.gamecore.Teams;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
@@ -197,16 +195,13 @@ public class Cannon {
 					arrow.remove();
 					return;
 				}
-
 				HashMap<Double, Tower> distances = new HashMap<>();
 
 				if (target instanceof Player) {
 					Player player = Bukkit.getPlayer(target.getUniqueId());
 
 					for (Tower tower : Manager.getArena(arenaID).getBattleClash().towerList.values()) {
-
 						distances.put(player.getLocation().distanceSquared(tower.getRegionLocations()[1]), tower);
-
 					}
 
 					Tower minDistance = distances.get(Collections.min(distances.keySet()));
@@ -307,6 +302,11 @@ public class Cannon {
 			@Override
 			public void run() {
 
+				if (stand == null) {
+					cancel();
+					return;
+				}
+
 				stand.setHeadPose(new EulerAngle(Math.random(), Math.random(), Math.random()));
 
 				if (!Manager.getArena(arenaID).getState().equals(GameState.LIVE)) {
@@ -318,6 +318,12 @@ public class Cannon {
 
 					if (getTarget() != null) {
 						if (getTarget() instanceof Player) {
+							Arena arena = Manager.getArena((Player)getTarget());
+							if (arena.getClass(getTarget().getUniqueId()).equals(ClassTypes.MONK)) {
+								Monk monkClass = (Monk) arena.getClasses().get(getTarget().getUniqueId());
+
+								if (monkClass.isProtectionActive()) {return;}
+							}
 							stand.teleport(getTarget().getLocation());
 						}
 					}
@@ -408,7 +414,6 @@ public class Cannon {
 						if (minDistance.getTeam().equals(Manager.getArena(player).getTeam(player))) {
 							cancel();
 							stand.remove();
-
 							return;
 						}
 

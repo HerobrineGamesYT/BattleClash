@@ -66,30 +66,24 @@ public class GameListener implements Listener {
 				.contains(ChatColor.translateAlternateColorCodes('&', "&bBattle Clash &7: &aClass Selector"))
 				&& e.getRawSlot() <= 27 && e.getCurrentItem() != null) {
 
-			String classString = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName().toUpperCase());
-
+			String classString = null;
+			if (e.getCurrentItem().getType() != Material.AIR) classString = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName().toUpperCase());
+			if (classString == null) return;
 			classString = classString.replaceAll("\\s", "");
 			classString = classString.replaceAll("BATTLE", "");
 
 			ClassTypes type = ClassTypes.valueOf(classString);
 
 			if (Manager.hasKit(player) && Manager.getKit(player).equals(type)) {
-				player.sendMessage(ChatColor.RED + "You already have this class selected!");
+				player.sendMessage(ChatColor.GREEN + "You already have this class selected!");
 			} else {
 
 				if (type.isUnlockable() && !HerobrinePVPCore.getFileManager().isItemUnlocked(ItemTypes.CLASS,
 						type.toString(), player.getUniqueId())) {
-
 					player.playSound(player.getLocation(), Sound.VILLAGER_NO, 1f, 1f);
 					player.sendMessage(ChatColor.RED + "You do not have this class unlocked!");
-
-				} else {
-					player.sendMessage(ChatColor.GREEN + "You have selected the " + type.getDisplay() + ChatColor.GREEN
-							+ " class!");
-
-					Manager.getArena(player).setClass(player.getUniqueId(), type);
 				}
-
+				else Manager.getArena(player).setClass(player.getUniqueId(), type);
 			}
 
 			e.setCancelled(true);
@@ -97,11 +91,7 @@ public class GameListener implements Listener {
 		} else {
 			if (Manager.isPlaying(player)) {
 				Arena arena = Manager.getArena(player);
-
-				if (arena.getGame(arena.getID()).equals(Games.CLASH_ROYALE)) {
-					e.setCancelled(true);
-
-				}
+				if (arena.getGame(arena.getID()).equals(Games.CLASH_ROYALE)) e.setCancelled(true);
 			}
 		}
 	}
@@ -116,15 +106,11 @@ public class GameListener implements Listener {
 
 			if (arena.getGame(arena.getID()).equals(Games.CLASH_ROYALE) && arena.getState().equals(GameState.LIVE)) {
 				if (e.getEntityType() == EntityType.SKELETON) {
-
 					if (e.getTarget() instanceof Player) {
 						Player targetPlayer = (Player) e.getTarget();
 						Player skeletonOwner = Bukkit.getPlayer(e.getEntity().getCustomName());
 
-						if (arena.getTeam(targetPlayer) == arena.getTeam(skeletonOwner)) {
-							e.setCancelled(true);
-
-						}
+						if (arena.getTeam(targetPlayer) == arena.getTeam(skeletonOwner)) e.setCancelled(true);
 					}
 				}
 
@@ -183,40 +169,8 @@ public class GameListener implements Listener {
 
 											player.playSound(player.getLocation(), Sound.DIG_STONE, 1, 0.5f);
 											player.playSound(player.getLocation(), Sound.WITHER_HURT, 0.23f, 0.2f);
-
-											game.updateTowerHealth(
-													Manager.getArena(tower.getRegionLocations()[1].getWorld()));
-											if (tower.getHealth() <= 0) {
-
-												tower.setEnabled(false);
-
-												for (Cannon cannon : tower.getCannons()) {
-													cannon.setActive(false);
-												}
-												if (tower.getType().equals(TowerTypes.PRINCESS)) {
-
-													for (Tower tower2 : game.getTower().values()) {
-														if (tower2.getTeam().equals(tower.getTeam())
-																&& tower2.getType().equals(TowerTypes.KING)) {
-															if (!tower2.isEnabled()) {
-																tower2.setEnabled(true);
-																for (Cannon cannon : tower2.getCannons()) {
-																	cannon.setActive(true);
-																}
-
-															}
-														}
-													}
-												}
-												arena.playSound(Sound.WITHER_DEATH);
-												arena.sendMessage(ChatColor.translateAlternateColorCodes('&',
-														"&a&lTOWER DESTRUCTION > " + tower.getFriendlyName()
-																+ ChatColor.GREEN + " has been destroyed by "
-																+ arena.getTeam(player).getColor() + player.getName()
-																+ ChatColor.GREEN + "!"));
-
-											}
-
+											game.updateTowerHealth(Manager.getArena(tower.getRegionLocations()[1].getWorld()));
+											game.checkIfDead(tower, player);
 										}
 
 										else {
@@ -228,76 +182,14 @@ public class GameListener implements Listener {
 
 									else {
 										if (arena.getClass(player).equals(ClassTypes.ARCHER)) {
-
 											tower.subtractHealth(arena.getClass(player).getBaseDamage());
 											game.getTowerHits().put(player.getUniqueId(), System.currentTimeMillis());
-
 										}
-
 										player.playSound(player.getLocation(), Sound.DIG_STONE, 1, 0.5f);
 										player.playSound(player.getLocation(), Sound.WITHER_HURT, 0.23f, 0.2f);
 
-										game.updateTowerHealth(
-												Manager.getArena(tower.getRegionLocations()[1].getWorld()));
-										if (tower.getHealth() <= 0) {
-
-											tower.setEnabled(false);
-
-											for (Cannon cannon : tower.getCannons()) {
-												cannon.setActive(false);
-											}
-											if (tower.getType().equals(TowerTypes.PRINCESS)) {
-
-												for (Tower tower2 : game.getTower().values()) {
-													if (tower2.getTeam().equals(tower.getTeam())
-															&& tower2.getType().equals(TowerTypes.KING)) {
-														if (!tower2.isEnabled()) {
-															tower2.setEnabled(true);
-															for (Cannon cannon : tower2.getCannons()) {
-																cannon.setActive(true);
-															}
-
-														}
-													}
-												}
-											}
-											arena.playSound(Sound.WITHER_DEATH);
-											arena.sendMessage(ChatColor.translateAlternateColorCodes('&',
-													"&a&lTOWER DESTRUCTION > " + tower.getFriendlyName()
-															+ ChatColor.GREEN + " has been destroyed by "
-															+ arena.getTeam(player).getColor() + player.getName()
-															+ ChatColor.GREEN + "!"));
-
-											if (tower.getType().equals(TowerTypes.KING)) {
-												if (arena.getTeam(player).equals(Teams.RED)) {
-													ClashRoyaleGame.redCrowns = 3;
-
-													game.isGameOver();
-												} else {
-
-													ClashRoyaleGame.blueCrowns = 3;
-
-													game.isGameOver();
-												}
-											} else {
-												if (arena.getTeam(player).equals(Teams.RED)) {
-													ClashRoyaleGame.redCrowns = ClashRoyaleGame.redCrowns + 1;
-
-													if (game.getSuddenDeath()) {
-														game.isGameOver();
-
-													}
-												} else {
-
-													ClashRoyaleGame.blueCrowns = ClashRoyaleGame.blueCrowns + 1;
-
-													if (game.getSuddenDeath()) {
-														game.isGameOver();
-													}
-												}
-											}
-										}
-
+										game.updateTowerHealth(Manager.getArena(tower.getRegionLocations()[1].getWorld()));
+										game.checkIfDead(tower, player);
 									}
 								} else if (!tower.isEnabled() && tower.getType().equals(TowerTypes.KING)) {
 									player.sendMessage(ChatColor.GREEN
@@ -333,8 +225,7 @@ public class GameListener implements Listener {
 					int randomIndex = rand.nextInt(alivePlayersSize);
 					Player randPlayer = Bukkit.getPlayer(ClashRoyaleGame.getAlivePlayers().get(randomIndex));
 					player.teleport(randPlayer);
-					player.sendMessage(
-							ChatColor.GREEN + "You are now spectating " + ChatColor.GOLD + randPlayer.getName());
+					player.sendMessage(ChatColor.GREEN + "You are now spectating " + ChatColor.GOLD + randPlayer.getName());
 
 				} else if (player.getItemInHand().getItemMeta().getDisplayName().equals(ChatColor.RED + "Leave")) {
 
@@ -415,30 +306,22 @@ public class GameListener implements Listener {
 
 													if (arena.getClass(player).equals(ClassTypes.HEALER)) {
 														for (Entity ent : player.getNearbyEntities(3f, 1f, 3f)) {
-
 															if (ent instanceof Player) {
 																Player pl = (Player) ent;
-
 																if (arena.getTeam(pl).equals(arena.getTeam(player))
 																		&& pl != player) {
-
 																	try {
 																		if (!(pl.getHealth() >= 20)
 																				&& !(pl.getHealth() <= 0)) {
-
 																			if (pl.getHealth() + 1.0 > 20) {
-
 																				if (pl.getHealth() + 0.5 > 20) {
-
 																					if (!(pl.getHealth() + 0.25 > 20)) {
-																						pl.setHealth(
-																								pl.getHealth() + 0.25);
+																						pl.setHealth(pl.getHealth() + 0.25);
 																						pl.sendMessage(ChatColor.GOLD
 																								+ player.getName()
 																								+ ChatColor.AQUA
 																								+ " healed you for 0.25 health!");
 																					}
-
 																				} else {
 																					pl.setHealth(pl.getHealth() + 0.5);
 																					pl.sendMessage(ChatColor.GOLD
@@ -446,7 +329,6 @@ public class GameListener implements Listener {
 																							+ ChatColor.AQUA
 																							+ " healed you for 0.5 health!");
 																				}
-
 																			} else {
 																				pl.setHealth(pl.getHealth() + 1);
 																				pl.sendMessage(ChatColor.GOLD
@@ -477,17 +359,14 @@ public class GameListener implements Listener {
 
 																		if (!(player.getHealth() + 0.25 > 20)) {
 																			player.setHealth(player.getHealth() + 0.5);
-
 																		}
 
 																	} else {
 																		player.setHealth(player.getHealth() + 0.5);
-
 																	}
 
 																} else {
 																	player.setHealth(player.getHealth() + 1);
-
 																}
 															} catch (Exception exception) {
 																return;
@@ -501,66 +380,8 @@ public class GameListener implements Listener {
 												player.playSound(player.getLocation(), Sound.DIG_STONE, 1, 0.5f);
 												player.playSound(player.getLocation(), Sound.WITHER_HURT, 0.23f, 0.2f);
 
-												game.updateTowerHealth(
-														Manager.getArena(tower.getRegionLocations()[1].getWorld()));
-												if (tower.getHealth() <= 0) {
-
-													tower.setEnabled(false);
-
-													for (Cannon cannon : tower.getCannons()) {
-														cannon.setActive(false);
-													}
-													if (tower.getType().equals(TowerTypes.PRINCESS)) {
-
-														for (Tower tower2 : game.getTower().values()) {
-															if (tower2.getTeam().equals(tower.getTeam())
-																	&& tower2.getType().equals(TowerTypes.KING)) {
-																if (!tower2.isEnabled()) {
-																	tower2.setEnabled(true);
-																	for (Cannon cannon : tower2.getCannons()) {
-																		cannon.setActive(true);
-																	}
-
-																}
-															}
-														}
-													}
-													arena.playSound(Sound.WITHER_DEATH);
-													arena.sendMessage(ChatColor.translateAlternateColorCodes('&',
-															"&a&lTOWER DESTRUCTION > " + tower.getFriendlyName()
-																	+ ChatColor.GREEN + " has been destroyed by "
-																	+ arena.getTeam(player).getColor()
-																	+ player.getName() + ChatColor.GREEN + "!"));
-
-													if (tower.getType().equals(TowerTypes.KING)) {
-														if (arena.getTeam(player).equals(Teams.RED)) {
-															ClashRoyaleGame.redCrowns = 3;
-
-															game.isGameOver();
-														} else {
-
-															ClashRoyaleGame.blueCrowns = 3;
-
-															game.isGameOver();
-														}
-													} else {
-														if (arena.getTeam(player).equals(Teams.RED)) {
-															ClashRoyaleGame.redCrowns = ClashRoyaleGame.redCrowns + 1;
-
-															if (game.getSuddenDeath()) {
-																game.isGameOver();
-
-															}
-														} else {
-
-															ClashRoyaleGame.blueCrowns = ClashRoyaleGame.blueCrowns + 1;
-
-															if (game.getSuddenDeath()) {
-																game.isGameOver();
-															}
-														}
-													}
-												}
+												game.updateTowerHealth(Manager.getArena(tower.getRegionLocations()[1].getWorld()));
+												game.checkIfDead(tower, player);
 											} else {
 												double timeToAttack = (arena.getClass(player).getHitSpeed()
 														- (System.currentTimeMillis()
@@ -568,11 +389,9 @@ public class GameListener implements Listener {
 														/ 1000.0;
 												player.sendMessage(ChatColor.RED + "You can attack this tower in "
 														+ ChatColor.BOLD + timeToAttack + "s");
-
 											}
 
 										} else {
-
 											if (player.getInventory().getHeldItemSlot() == 0) {
 
 												if (arena.getClass(player) != ClassTypes.WITCH
@@ -589,38 +408,8 @@ public class GameListener implements Listener {
 											player.playSound(player.getLocation(), Sound.DIG_STONE, 1, 0.5f);
 											player.playSound(player.getLocation(), Sound.WITHER_HURT, 0.23f, 0.2f);
 
-											game.updateTowerHealth(
-													Manager.getArena(tower.getRegionLocations()[1].getWorld()));
-											if (tower.getHealth() <= 0) {
-
-												tower.setEnabled(false);
-
-												for (Cannon cannon : tower.getCannons()) {
-													cannon.setActive(false);
-												}
-												if (tower.getType().equals(TowerTypes.PRINCESS)) {
-
-													for (Tower tower2 : game.getTower().values()) {
-														if (tower2.getTeam().equals(tower.getTeam())
-																&& tower2.getType().equals(TowerTypes.KING)) {
-															if (!tower2.isEnabled()) {
-																tower2.setEnabled(true);
-																for (Cannon cannon : tower2.getCannons()) {
-																	cannon.setActive(true);
-																}
-
-															}
-														}
-													}
-												}
-												arena.playSound(Sound.WITHER_DEATH);
-												arena.sendMessage(ChatColor.translateAlternateColorCodes('&',
-														"&a&lTOWER DESTRUCTION > " + tower.getFriendlyName()
-																+ ChatColor.GREEN + " has been destroyed by "
-																+ arena.getTeam(player).getColor() + player.getName()
-																+ ChatColor.GREEN + "!"));
-
-											}
+											game.updateTowerHealth(Manager.getArena(tower.getRegionLocations()[1].getWorld()));
+											game.checkIfDead(tower, player);
 										}
 									}
 								} else if (!tower.isEnabled() && tower.getType().equals(TowerTypes.KING)) {
@@ -696,68 +485,8 @@ public class GameListener implements Listener {
 													player.playSound(player.getLocation(), Sound.WITHER_HURT, 0.23f,
 															0.2f);
 
-													game.updateTowerHealth(
-															Manager.getArena(tower.getRegionLocations()[1].getWorld()));
-													if (tower.getHealth() <= 0) {
-
-														tower.setEnabled(false);
-
-														for (Cannon cannon : tower.getCannons()) {
-															cannon.setActive(false);
-														}
-														if (tower.getType().equals(TowerTypes.PRINCESS)) {
-
-															for (Tower tower2 : game.getTower().values()) {
-																if (tower2.getTeam().equals(tower.getTeam())
-																		&& tower2.getType().equals(TowerTypes.KING)) {
-																	if (!tower2.isEnabled()) {
-																		tower2.setEnabled(true);
-																		for (Cannon cannon : tower2.getCannons()) {
-																			cannon.setActive(true);
-																		}
-
-																	}
-																}
-															}
-														}
-														arena.playSound(Sound.WITHER_DEATH);
-														arena.sendMessage(ChatColor.translateAlternateColorCodes('&',
-																"&a&lTOWER DESTRUCTION > " + tower.getFriendlyName()
-																		+ ChatColor.GREEN + " has been destroyed by "
-																		+ arena.getTeam(player).getColor()
-																		+ player.getName() + ChatColor.GREEN + "!"));
-
-														if (tower.getType().equals(TowerTypes.KING)) {
-															if (arena.getTeam(player).equals(Teams.RED)) {
-																ClashRoyaleGame.redCrowns = 3;
-
-																game.isGameOver();
-															} else {
-
-																ClashRoyaleGame.blueCrowns = 3;
-
-																game.isGameOver();
-															}
-														} else {
-															if (arena.getTeam(player).equals(Teams.RED)) {
-																ClashRoyaleGame.redCrowns = ClashRoyaleGame.redCrowns
-																		+ 1;
-
-																if (game.getSuddenDeath()) {
-																	game.isGameOver();
-
-																}
-															} else {
-
-																ClashRoyaleGame.blueCrowns = ClashRoyaleGame.blueCrowns
-																		+ 1;
-
-																if (game.getSuddenDeath()) {
-																	game.isGameOver();
-																}
-															}
-														}
-													}
+													game.updateTowerHealth(Manager.getArena(tower.getRegionLocations()[1].getWorld()));
+													game.checkIfDead(tower, player);
 												} else {
 													double timeToAttack = (arena.getClass(player).getHitSpeed()
 															- (System.currentTimeMillis()
@@ -765,7 +494,6 @@ public class GameListener implements Listener {
 															/ 1000.0;
 													player.sendMessage(ChatColor.RED + "You can attack this tower in "
 															+ ChatColor.BOLD + timeToAttack + "s");
-
 												}
 
 											} else {
@@ -774,46 +502,15 @@ public class GameListener implements Listener {
 													game.getTowerHits().remove(player.getUniqueId());
 
 													tower.subtractHealth(arena.getClass(player).getBaseDamage());
-													game.getTowerHits().put(player.getUniqueId(),
-															System.currentTimeMillis());
+													game.getTowerHits().put(player.getUniqueId(), System.currentTimeMillis());
 
 												}
 
 												player.playSound(player.getLocation(), Sound.DIG_STONE, 1, 0.5f);
 												player.playSound(player.getLocation(), Sound.WITHER_HURT, 0.23f, 0.2f);
 
-												game.updateTowerHealth(
-														Manager.getArena(tower.getRegionLocations()[1].getWorld()));
-												if (tower.getHealth() <= 0) {
-
-													tower.setEnabled(false);
-
-													for (Cannon cannon : tower.getCannons()) {
-														cannon.setActive(false);
-													}
-													if (tower.getType().equals(TowerTypes.PRINCESS)) {
-
-														for (Tower tower2 : game.getTower().values()) {
-															if (tower2.getTeam().equals(tower.getTeam())
-																	&& tower2.getType().equals(TowerTypes.KING)) {
-																if (!tower2.isEnabled()) {
-																	tower2.setEnabled(true);
-																	for (Cannon cannon : tower2.getCannons()) {
-																		cannon.setActive(true);
-																	}
-
-																}
-															}
-														}
-													}
-													arena.playSound(Sound.WITHER_DEATH);
-													arena.sendMessage(ChatColor.translateAlternateColorCodes('&',
-															"&a&lTOWER DESTRUCTION > " + tower.getFriendlyName()
-																	+ ChatColor.GREEN + " has been destroyed by "
-																	+ arena.getTeam(player).getColor()
-																	+ player.getName() + ChatColor.GREEN + "!"));
-
-												}
+												game.updateTowerHealth(Manager.getArena(tower.getRegionLocations()[1].getWorld()));
+												game.checkIfDead(tower, player);
 											}
 
 										} else if (!tower.isEnabled() && tower.getType().equals(TowerTypes.KING)) {
@@ -875,10 +572,8 @@ public class GameListener implements Listener {
 			if (skeleton.getCustomName() != null && arena != null) {
 
 				if (arena.getGame(arena.getID()).equals(Games.CLASH_ROYALE)) {
-
 					e.getDrops().clear();
 					e.setDroppedExp(0);
-
 				}
 
 			}
@@ -1691,7 +1386,6 @@ public class GameListener implements Listener {
 				@Override
 				public void run() {
 					player.spigot().respawn();
-
 					cancel();
 				}
 			}.runTaskLater(ClashRoyaleMain.getInstance(), 2L);

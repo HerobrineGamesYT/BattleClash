@@ -764,7 +764,9 @@ public class ClashRoyaleGame {
 				Score blank3 = obj.getScore("   ");
 				blank3.setScore(2);
 
-				Score ip = obj.getScore(ChatColor.translateAlternateColorCodes('&', "&cherobrinepvp.beastmc.com"));
+				Score ip;
+				if(HerobrinePVPCore.getFileManager().getEnvironment().equals("PRODUCTION")) ip = obj.getScore(ChatColor.translateAlternateColorCodes('&', "&cherobrinepvp.beastmc.com"));
+				else ip = obj.getScore(ChatColor.translateAlternateColorCodes('&', "&cDevelopment Server"));
 				ip.setScore(1);
 			} else {
 
@@ -785,7 +787,9 @@ public class ClashRoyaleGame {
 				Score blank3 = obj.getScore("   ");
 				blank3.setScore(2);
 
-				Score ip = obj.getScore(ChatColor.translateAlternateColorCodes('&', "&cherobrinepvp.beastmc.com"));
+				Score ip;
+				if(HerobrinePVPCore.getFileManager().getEnvironment().equals("PRODUCTION")) ip = obj.getScore(ChatColor.translateAlternateColorCodes('&', "&cherobrinepvp.beastmc.com"));
+				else ip = obj.getScore(ChatColor.translateAlternateColorCodes('&', "&cDevelopment Server"));
 				ip.setScore(1);
 
 				actionBar();
@@ -916,34 +920,27 @@ public class ClashRoyaleGame {
 		runnable.runTaskTimer(ClashRoyaleMain.getInstance(), 0, 20);
 	}
 
+	public HashMap<String, Tower> getTowerList() {
+		return towerList;
+	}
+
 	public void actionBar() {
 		HashMap<Double, Tower> distances = new HashMap<>();
 		new BukkitRunnable() {
 
 			@Override
 			public void run() {
-				if (arena.getState().equals(GameState.RECRUITING) || arena.getState().equals(GameState.COUNTDOWN)) {
-					cancel();
-				}
+				if (arena.getState().equals(GameState.RECRUITING) || arena.getState().equals(GameState.COUNTDOWN)) cancel();
 
 				for (UUID uuid : arena.getPlayers()) {
 
 					Player player = Bukkit.getPlayer(uuid);
 
-					for (Tower tower : towerList.values()) {
-
-						distances.put(player.getLocation().distanceSquared(tower.getRegionLocations()[1]), tower);
-
-					}
-
+					for (Tower tower : towerList.values()) {distances.put(player.getLocation().distanceSquared(tower.getRegionLocations()[1]), tower);}
 					Tower minDistance = distances.get(Collections.min(distances.keySet()));
 
-					if (minDistance.getHealth() <= 0) {
-						GameCoreMain.getInstance().sendActionBar(player, "&aNearest Tower Health: " + "&cDEAD");
-					} else {
-						GameCoreMain.getInstance().sendActionBar(player,
-								"&aNearest Tower Health: " + minDistance.getHealth() + "&c❤");
-					}
+					if (minDistance.getHealth() <= 0) GameCoreMain.getInstance().sendActionBar(player, "&aNearest Tower Health: " + "&cDEAD");
+					else GameCoreMain.getInstance().sendActionBar(player, "&aNearest Tower Health: " + minDistance.getHealth() + "&c❤");
 
 					distances.clear();
 				}
@@ -962,29 +959,16 @@ public class ClashRoyaleGame {
 			public void run() {
 				if (arena.getState().equals(GameState.RECRUITING) || arena.getState().equals(GameState.COUNTDOWN)) {
 					cancel();
-					for (Cannon cannon : cannonList.values()) {
-						cannon.setTarget(null);
-					}
+					for (Cannon cannon : cannonList.values()) {cannon.setTarget(null);}
 				}
-
 				for (Cannon cannon : cannonList.values()) {
 
 					for (UUID uuid : arena.getPlayers()) {
-
 						Player player = Bukkit.getPlayer(uuid);
+						if (cannon.isActive() && cannon.getTargetTeam().equals(arena.getTeam(player)) && !cannon.hasTarget()) cannon.checkForTarget(player);
 
-						if (cannon.isActive() && cannon.getTargetTeam().equals(arena.getTeam(player))
-								&& !cannon.hasTarget()) {
-
-							cannon.checkForTarget(player);
-
-						}
 					}
-
-					if (cannon.isActive() && cannon.hasTarget()) {
-						cannon.shootTarget();
-					}
-
+					if (cannon.isActive() && cannon.hasTarget()) cannon.shootTarget();
 				}
 
 			}
@@ -992,10 +976,7 @@ public class ClashRoyaleGame {
 
 	}
 
-	public void setTime(int time) {
-
-		seconds = time;
-	}
+	public void setTime(int time) {seconds = time;}
 
 	// needed to update kill count on scoreboards
 	public void updateKillCounts(Player killer) {
@@ -1046,24 +1027,14 @@ public class ClashRoyaleGame {
 	}
 
 	public void updateTowerHealth(Arena arena) {
-
 		for (UUID uuid : arena.getPlayers()) {
-
 			Player player = Bukkit.getPlayer(uuid);
+			if (redKing.getHealth() <= 0) player.getScoreboard().getTeam("redTower").setSuffix(ChatColor.GREEN + "" + ChatColor.RED + "DEAD");
+			else player.getScoreboard().getTeam("redTower").setSuffix(ChatColor.GREEN + "" + redKing.getHealth() + ChatColor.RED + "❤");
 
-			if (redKing.getHealth() <= 0) {
-				player.getScoreboard().getTeam("redTower").setSuffix(ChatColor.GREEN + "" + ChatColor.RED + "DEAD");
-			} else {
-				player.getScoreboard().getTeam("redTower")
-						.setSuffix(ChatColor.GREEN + "" + redKing.getHealth() + ChatColor.RED + "❤");
-			}
+			if (blueKing.getHealth() <= 0) player.getScoreboard().getTeam("blueTower").setSuffix(ChatColor.GREEN + "" + ChatColor.RED + "DEAD");
+			else player.getScoreboard().getTeam("blueTower").setSuffix(ChatColor.GREEN + "" + blueKing.getHealth() + ChatColor.RED + "❤");
 
-			if (blueKing.getHealth() <= 0) {
-				player.getScoreboard().getTeam("blueTower").setSuffix(ChatColor.GREEN + "" + ChatColor.RED + "DEAD");
-			} else {
-				player.getScoreboard().getTeam("blueTower")
-						.setSuffix(ChatColor.GREEN + "" + blueKing.getHealth() + ChatColor.RED + "❤");
-			}
 
 		}
 
@@ -1082,41 +1053,64 @@ public class ClashRoyaleGame {
 	}
 
 	public static void removeArmorStands(Player player) {
-
 		for (Entity ent : Manager.getArena(player).getSpawn().getWorld().getEntities()) {
+			if (ent instanceof ArmorStand) {if (ent.getCustomName() == player.getCustomName()) ent.remove();}
+		}
+	}
 
-			if (ent instanceof ArmorStand) {
 
-				if (ent.getCustomName() == player.getCustomName()) {
+	public boolean shouldDashHit(Region region, Player player) {
+		return region.blockInLocation(player.getLocation().getBlock().getRelative(BlockFace.NORTH))
+				|| region.blockInLocation(player.getLocation().getBlock().getRelative(BlockFace.SOUTH))
+				|| region.blockInLocation(player.getLocation().getBlock().getRelative(BlockFace.WEST))
+				|| region.blockInLocation(player.getLocation().getBlock().getRelative(BlockFace.EAST));
+	}
 
-					ent.remove();
+	// Check if a tower is dead when damaged by a player. Will destroy a tower if meant to be dead and end the game if necessary.
+	// This replaces the old and stupid way of pasting this piece of code everytime the tower damage is updated, which added a lot of duplicate and unecessary code.
+	public void checkIfDead(Tower tower, Player player) {
+		if (tower.getHealth() <= 0) {
+			tower.setEnabled(false);
+			for (Cannon cannon : tower.getCannons()) {cannon.setActive(false);}
+			if (tower.getType().equals(TowerTypes.PRINCESS)) {
+				for (Tower tower2 : getTower().values()) {
+					if (tower2.getTeam().equals(tower.getTeam())
+							&& tower2.getType().equals(TowerTypes.KING)) {
+						if (!tower2.isEnabled()) {
+							tower2.setEnabled(true);
+							for (Cannon cannon : tower2.getCannons()) {cannon.setActive(true);}
+						}
+					}
 				}
-
+				if (arena.getTeam(player).equals(Teams.RED)) ClashRoyaleGame.redCrowns = ClashRoyaleGame.redCrowns + 1;
+				else ClashRoyaleGame.blueCrowns = ClashRoyaleGame.blueCrowns + 1;
+				if (getSuddenDeath()) isGameOver();
 			}
 
-		}
+			arena.playSound(Sound.WITHER_DEATH);
+			arena.sendMessage(ChatColor.translateAlternateColorCodes('&',
+					"&a&lTOWER DESTRUCTION > " + tower.getFriendlyName()
+							+ ChatColor.GREEN + " has been destroyed by "
+							+ arena.getTeam(player).getColor() + player.getName()
+							+ ChatColor.GREEN + "!"));
 
+			if (tower.getType().equals(TowerTypes.KING)) {
+				if (arena.getTeam(player).equals(Teams.RED)) ClashRoyaleGame.redCrowns = 3;
+				else ClashRoyaleGame.blueCrowns = 3;
+				isGameOver();
+			}
+		}
 	}
 
 	public static void banditCooldown(Player player) {
-
 		new BukkitRunnable() {
 			int cooldown = 30;
 
 			@Override
 			public void run() {
-
-				if (!Manager.isPlaying(player) || Manager.getArena(player).getState().equals(GameState.RECRUITING)) {
-					cancel();
-				}
-
-				if (!Manager.getArena(player).getState().equals(GameState.LIVE)) {
-					cancel();
-				}
-				if (!Manager.getArena(player).getClass(player).equals(ClassTypes.BANDIT)) {
-					cancel();
-
-				}
+				if (!Manager.isPlaying(player) || Manager.getArena(player).getState().equals(GameState.RECRUITING)) cancel();
+				if (!Manager.getArena(player).getState().equals(GameState.LIVE)) cancel();
+				if (!Manager.getArena(player).getClass(player).equals(ClassTypes.BANDIT)) cancel();
 
 				if (cooldown == 0) {
 					cancel();
@@ -1216,89 +1210,20 @@ public class ClashRoyaleGame {
 
 								Arena arena = Manager.getArena(tower.getRegionLocations()[1].getWorld());
 
-								if (region.blockInLocation(player.getLocation().getBlock().getRelative(BlockFace.NORTH))
-										|| region.blockInLocation(
-												player.getLocation().getBlock().getRelative(BlockFace.SOUTH))
-										|| region.blockInLocation(
-												player.getLocation().getBlock().getRelative(BlockFace.WEST))
-										|| region.blockInLocation(
-												player.getLocation().getBlock().getRelative(BlockFace.EAST))) {
+								if (game.shouldDashHit(region, player)) {
 
 									hasHit.add(player.getUniqueId());
 									if (tower.isEnabled() && !tower.getTeam().equals(arena.getTeam(player))) {
 
 										if (arena.getClass(player).equals(ClassTypes.BANDIT)) {
-
 											tower.subtractHealth(16);
-
 											player.sendMessage(ChatColor.GREEN + "You dashed into a tower!");
 										}
-
 										player.playSound(player.getLocation(), Sound.DIG_STONE, 1, 0.5f);
 										player.playSound(player.getLocation(), Sound.WITHER_HURT, 0.23f, 0.2f);
+										game.updateTowerHealth(Manager.getArena(tower.getRegionLocations()[1].getWorld()));
 
-										game.updateTowerHealth(
-												Manager.getArena(tower.getRegionLocations()[1].getWorld()));
-										if (tower.getHealth() <= 0) {
-
-											tower.setEnabled(false);
-
-											for (Cannon cannon : tower.getCannons()) {
-												cannon.setActive(false);
-											}
-											if (tower.getType().equals(TowerTypes.PRINCESS)) {
-
-												for (Tower tower2 : game.getTower().values()) {
-													if (tower2.getTeam().equals(tower.getTeam())
-															&& tower2.getType().equals(TowerTypes.KING)) {
-														if (!tower2.isEnabled()) {
-															tower2.setEnabled(true);
-															for (Cannon cannon : tower2.getCannons()) {
-																cannon.setActive(true);
-															}
-
-														}
-													}
-												}
-											}
-											arena.playSound(Sound.WITHER_DEATH);
-											arena.sendMessage(ChatColor.translateAlternateColorCodes('&',
-													"&a&lTOWER DESTRUCTION > " + tower.getFriendlyName()
-															+ ChatColor.GREEN + " has been destroyed by "
-															+ arena.getTeam(player).getColor() + player.getName()
-															+ ChatColor.GREEN + "!"));
-
-											if (tower.getType().equals(TowerTypes.KING)) {
-												if (arena.getTeam(player).equals(Teams.RED)) {
-													ClashRoyaleGame.redCrowns = 3;
-
-													game.isGameOver();
-												} else {
-
-													ClashRoyaleGame.blueCrowns = 3;
-
-													game.isGameOver();
-												}
-											} else {
-												if (arena.getTeam(player).equals(Teams.RED)) {
-													ClashRoyaleGame.redCrowns = ClashRoyaleGame.redCrowns + 1;
-
-													if (game.getSuddenDeath()) {
-														game.isGameOver();
-
-													}
-												} else {
-
-													ClashRoyaleGame.blueCrowns = ClashRoyaleGame.blueCrowns + 1;
-
-													if (game.getSuddenDeath()) {
-														game.isGameOver();
-													}
-												}
-											}
-
-										}
-
+										game.checkIfDead(tower, player);
 									} else if (!tower.isEnabled() && tower.getType().equals(TowerTypes.KING)) {
 										player.sendMessage(ChatColor.GREEN
 												+ "That tower is protected! Destroy at least one of the princess towers to be able to damage this one!");

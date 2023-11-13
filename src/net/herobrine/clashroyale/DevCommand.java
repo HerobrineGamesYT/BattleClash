@@ -107,8 +107,7 @@ public class DevCommand implements CommandExecutor {
 																		.get(target.getUniqueId())).getName());
 
 											} else {
-												player.sendMessage(ChatColor.GREEN + "Last Ability Attacker: "
-														+ ChatColor.RED + "None!");
+												player.sendMessage(ChatColor.GREEN + "Last Ability Attacker: " + ChatColor.RED + "None!");
 											}
 
 										}
@@ -166,9 +165,7 @@ public class DevCommand implements CommandExecutor {
 
 											int time = Integer.parseInt(args[1]);
 											if (time > 30) {
-												player.sendMessage(ChatColor.RED
-														+ "You can't set the timer higher than 30 minutes!");
-
+												player.sendMessage(ChatColor.RED + "You can't set the timer higher than 30 minutes!");
 											} else {
 											arena.getBattleClash().setTime(time * 60);
 												String newTime = String.format("%02d:%02d",
@@ -183,13 +180,11 @@ public class DevCommand implements CommandExecutor {
 										}
 
 										else {
-											player.sendMessage(ChatColor.RED
-													+ "Invalid time provided. Note that you can only put the time in units of minutes(m/minutes) and seconds (s/seconds)");
+											player.sendMessage(ChatColor.RED + "Invalid time provided. Note that you can only put the time in units of minutes(m/minutes) and seconds (s/seconds)");
 										}
 
 									} catch (NumberFormatException e) {
-										player.sendMessage(
-												ChatColor.RED + "Invalid time provided. Did you put a number?");
+										player.sendMessage(ChatColor.RED + "Invalid time provided. Did you put a number?");
 									}
 
 								}
