@@ -6,6 +6,12 @@ Dependencies:
 - [Mine] GameCore (Lots of minigame-related functions, configuration settings, and arena management. It's the backbone for all my minigame plugins within this setup.)
 - [3rd Party] NoteBlockAPI (HBPVP-Core Dependency for playing custom NoteBlock themes - i.e win/draw/lose jingles)
 
+Design Notes:
+- This game mode is meant to be a fast-paced PVP mode where players can dive in as their favorite Clash Royale character, and use their tactics and abilities to win the game!
+- The Original mode is more PVP combat-focused, while Towers mode has a little more strategy, as you need to put constant pressure on the enemy's towers while also trying to work with your teammates to defend your own.
+- The Original game mode can be played with as little as 2 players, while at least 4-6 players are recommended for the Towers mode.
+- Each of the classes are designed with their own strategies in mind (and also try to keep faithful to their Clash Royale counterparts), for example, the Bandit is more of a fast-paced fighter while the wizard is more of a support class, being able to double jump around the arena and shoot fireballs that can deal area damage to multiple targets.
+
 More information on this game:
 
 Custom Classes:
